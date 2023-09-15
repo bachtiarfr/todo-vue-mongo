@@ -26,3 +26,4 @@ Route::prefix('/item')->group(function() {
     Route::delete('/{id}', [TodoController::class, 'destroy']);
     Route::get('/summary', [TodoController::class, 'summary']);
 });
+Route::post('/reminder', [TodoController::class, 'sendReminderEmail']);

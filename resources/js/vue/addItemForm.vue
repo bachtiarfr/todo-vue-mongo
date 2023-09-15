@@ -14,7 +14,29 @@ export default {
         return {
             item: {
                 name: ""
-            }
+            },
+            loaded: false,
+            chartData: {
+                labels: ['Completed Task', 'Incomplete Task'],
+                datasets: [
+                {
+                    data: [],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                },
+                ],
+            },
+            chartOptions: {
+                responsive: true,
+                scales: {
+                    y: {
+                        type: 'linear', // Explicitly specify Y-axis as linear scale
+                        beginAtZero: true, // Start Y-axis at 0
+                        ticks: {
+                            stepSize: 0.5, // Set the step size to 0.5
+                        },
+                    },
+                }
+            },
         }
     },
     methods: {
@@ -30,12 +52,40 @@ export default {
                 if(response.status == 201) {
                     this.item.name = "";
                     this.$emit('reloadlist')
+                    this.fetchSummaryData()
                 }
             })
             .catch(error => {
                 console.log(error);
             })
-        }
+        },
+        
+        fetchSummaryData() {
+           axios.get('api/item/summary')
+            .then((response) => {
+                const summaryData = response.data.data;
+                const completedItem = summaryData.completed_item.length;
+                const incompleteItem = summaryData.incomplete_item.length;
+
+                this.chartData.datasets[0].data = [completedItem, incompleteItem];
+                this.loaded = true
+                this.renderChart(completedItem, incompleteItem)
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        },
+        renderChart(completedItem, incompleteItem) {
+            this.chartData.datasets[0].data = [completedItem, incompleteItem];
+            
+            const ctx = document.getElementById('my-chart-id').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: this.chartData,
+            });
+                
+            this.loaded = true
+        },
     }
 }
 </script>
@@ -48,7 +98,7 @@ export default {
     height: 50px;
     width: 100%;
     max-width: 480px;
-    z-index: 99;
+    z-index: 98;
     bottom: 0;
     overflow: hidden;
     position: fixed;

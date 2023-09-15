@@ -5,14 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-
+use App\Console\Commands\SendReminderEmail;
 
 class TodoController extends Controller
 {
     public function index()
     {
         $items = Item::orderBy('created_at', 'DESC')->get();
-        return response()->json($items);
+
+        if (count($items) > 1) {
+            $response = [
+                'code' => 00,
+                'status' => true,
+                'message' => 'success',
+                'data' => $items
+            ];
+        } else {
+            $response = [
+                'code' => 01,
+                'status' => false,
+                'message' => 'Data not exist',
+                'data' => null
+            ];
+        }
+
+        return $response;
     }
 
     public function store(Request $request)
@@ -44,10 +61,24 @@ class TodoController extends Controller
             var_dump($existingItem->completed);
             var_dump($existingItem);
 
-            return $existingItem;
+            $response = [
+                'code' => 00,
+                'status' => true,
+                'message' => 'success',
+                'data' => $existingItem
+            ];
+
+            return $response;
         }
 
-        return "Item not found.";
+        $response = [
+            'code' => 01,
+            'status' => false,
+            'message' => 'Item not found',
+            'data' => $existingItem
+        ];
+
+        return $response;
     }
 
     public function destroy($id)
@@ -64,7 +95,24 @@ class TodoController extends Controller
 
     public function summary()
     {
-        $items = Item::orderBy('created_at', 'DESC')->where('completed', true)->get();
-        return response()->json($items);
+        $completedItem = Item::orderBy('created_at', 'DESC')->where('completed', true)->get();
+        $incompletItem = Item::orderBy('created_at', 'DESC')->where('completed', '!=', true)->get();
+
+        $response = [
+            'code' => 00,
+            'status' => true,
+            'message' => 'success',
+            'data' => [
+                'completed_item' => $completedItem,
+                'incomplete_item' => $incompletItem,
+            ]
+        ];
+
+        return $response;
+    }
+
+    public function sendReminderEmail(Request $request)
+    {   
+        SendReminderEmail::sendReminderEmail($request);
     }
 }
