@@ -1,8 +1,8 @@
-![image](https://github.com/bachtiarfr/todo-vue-mongo/assets/50721686/89a6e897-e62e-4a1d-8ede-58b84c2e4429)# Aplikasi ToDoList dengan Laravel, Vue, dan MongoDB
+# Aplikasi ToDoList dengan Laravel, Vue, dan MongoDB
 
 Aplikasi ToDoList adalah proyek pengembangan web sederhana yang menggunakan Laravel, Vue.js, dan MongoDB untuk manajemen tugas-tugas Anda. Aplikasi ini memiliki fitur CRUD untuk tugas, pengingat melalui email, dan ringkasan statistik.
 
-## Persyaratan
+## Setup
 
 - PHP 7.4 atau lebih baru
 - Composer
